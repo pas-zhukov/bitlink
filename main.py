@@ -10,8 +10,10 @@ def main():
     load_dotenv()
     TOKEN = os.getenv("TOKEN")
 
-    user_input = input("Введите ссылку, которую хотите сократить, \n"
-                       "или битлинк, для которого хотите узнать количество переходов: ").strip()
+    user_input = input('Введите ссылку, которую хотите сократить, \n'
+                       'или битлинк, '
+                       'для которого хотите узнать количество переходов: '
+                       ).strip()
 
     if is_bitlink(TOKEN, user_input):
         try:
@@ -19,7 +21,6 @@ def main():
             print("Переходов по ссылке:", count)
         except requests.exceptions.HTTPError as e:
             print("Введена некорректная ссылка. Код ошибки", str(e)[:3])
-            os.system("pause")
     else:
         title = input("Введите название для ссылки (не обязательно): ")
         try:
@@ -27,7 +28,6 @@ def main():
             print("Битлинк " + bitlink)
         except requests.exceptions.HTTPError as e:
             print("Введена некорректная ссылка. Код ошибки", str(e)[:3])
-            os.system("pause")
 
     os.system("pause")
 
@@ -39,7 +39,7 @@ def shorten_link(token: str, url: str, name: str = None) -> str:
         "Authorization": f"Bearer {token}"
     }
     request_params = {
-        "long_url": f"{url}",
+        "long_url": url,
         "name": name
     }
     bitlink_response = requests.post(
@@ -81,7 +81,9 @@ def is_bitlink(token: str, url: str):
 
     if re.match('http', url):
         url = url.split("//")[1]
-    bitlink_response = requests.get(API_URL + f"/bitlinks/{url}", headers=auth_header)
+
+    api_method_url = API_URL + f"/bitlinks/{url}"
+    bitlink_response = requests.get(api_method_url, headers=auth_header)
     if bitlink_response.ok:
         return True
     else:

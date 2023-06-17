@@ -42,10 +42,12 @@ python main.py
 
 
 Если ввести длинную ссылку, программа создаст битлинк:
+
 ![img](screenshots/create_bitlink.png)
 
 
 Если ввести битлинк, программа покажет число переходов по нему:
+
 ![img](screenshots/count_bitlink.png)
 
 

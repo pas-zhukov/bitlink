@@ -1,5 +1,6 @@
 import os
 import re
+from urllib.parse import urlparse
 import requests
 from dotenv import load_dotenv
 
@@ -8,32 +9,34 @@ API_URL = "https://api-ssl.bitly.com/v4/"
 
 def main():
     load_dotenv()
-    TOKEN = os.getenv("TOKEN")
+    bily_token = os.getenv("BITLY_TOKEN")
 
     user_input = input('Введите ссылку, которую хотите сократить, \n'
                        'или битлинк, '
                        'для которого хотите узнать количество переходов: '
                        ).strip()
 
-    if is_bitlink(TOKEN, user_input):
+    if is_bitlink(bily_token, user_input):
         try:
-            count = get_clicks_count(TOKEN, user_input)
+            count = get_clicks_count(bily_token, user_input)
             print("Переходов по ссылке:", count)
         except requests.exceptions.HTTPError as e:
-            print("Введена некорректная ссылка. Код ошибки", str(e)[:3])
+            print("Введена некорректная ссылка. Код ошибки",
+                  e.response.status_code)
     else:
-        title = input("Введите название для ссылки (не обязательно): ")
         try:
-            bitlink = shorten_link(TOKEN, user_input, title)
-            print("Битлинк " + bitlink)
+            bitlink = shorten_link(bily_token, user_input)
+            print(f"Битлинк {bitlink}")
         except requests.exceptions.HTTPError as e:
-            print("Введена некорректная ссылка. Код ошибки", str(e)[:3])
+            print("Введена некорректная ссылка. Код ошибки",
+                  e.response.status_code)
 
-    os.system("pause")
+    #  Чтобы окно с программой не закрывалось сразу после выполнения кода:
+    input('Press ENTER to exit...')
 
 
 def shorten_link(token: str, url: str, name: str = None) -> str:
-    api_method_url = API_URL + "bitlinks"
+    api_method_url = f"{API_URL}bitlinks"
 
     auth_header = {
         "Authorization": f"Bearer {token}"
@@ -56,18 +59,14 @@ def get_clicks_count(token: str, bitlink: str) -> int:
     if re.match('http', bitlink):
         bitlink = bitlink.split("//")[1]
 
-    api_method_url = API_URL + f"bitlinks/{bitlink}/clicks/summary"
+    api_method_url = f"{API_URL}bitlinks/{bitlink}/clicks/summary"
 
     auth_header = {
         "Authorization": f"Bearer {token}"
     }
-    request_params = {
-
-    }
     bitlink_response = requests.get(
         api_method_url,
-        headers=auth_header,
-        params=request_params
+        headers=auth_header
     )
     bitlink_response.raise_for_status()
 
@@ -79,15 +78,13 @@ def is_bitlink(token: str, url: str):
         "Authorization": f"Bearer {token}"
     }
 
-    if re.match('http', url):
-        url = url.split("//")[1]
+    parsed_url = urlparse(url)
+    url = parsed_url.netloc + parsed_url.path
 
-    api_method_url = API_URL + f"/bitlinks/{url}"
+    api_method_url = f"{API_URL}/bitlinks/{url}"
     bitlink_response = requests.get(api_method_url, headers=auth_header)
-    if bitlink_response.ok:
-        return True
-    else:
-        return False
+
+    return bitlink_response.ok
 
 
 if __name__ == "__main__":

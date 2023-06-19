@@ -1,5 +1,4 @@
 import os
-import re
 from urllib.parse import urlparse
 import requests
 from dotenv import load_dotenv
@@ -31,9 +30,6 @@ def main():
             print("Введена некорректная ссылка. Код ошибки",
                   e.response.status_code)
 
-    #  Чтобы окно с программой не закрывалось сразу после выполнения кода:
-    input('Press ENTER to exit...')
-
 
 def shorten_link(token: str, url: str, name: str = None) -> str:
     api_method_url = f"{API_URL}bitlinks"
@@ -56,8 +52,8 @@ def shorten_link(token: str, url: str, name: str = None) -> str:
 
 
 def get_clicks_count(token: str, bitlink: str) -> int:
-    if re.match('http', bitlink):
-        bitlink = bitlink.split("//")[1]
+    parsed_bitlink = urlparse(bitlink)
+    bitlink = f"{parsed_bitlink.netloc}{parsed_bitlink.path}"
 
     api_method_url = f"{API_URL}bitlinks/{bitlink}/clicks/summary"
 
@@ -79,7 +75,7 @@ def is_bitlink(token: str, url: str):
     }
 
     parsed_url = urlparse(url)
-    url = parsed_url.netloc + parsed_url.path
+    url = f"{parsed_url.netloc}{parsed_url.path}"
 
     api_method_url = f"{API_URL}/bitlinks/{url}"
     bitlink_response = requests.get(api_method_url, headers=auth_header)

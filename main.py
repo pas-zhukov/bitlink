@@ -2,6 +2,7 @@ import os
 from urllib.parse import urlparse
 import requests
 from dotenv import load_dotenv
+from argparse import ArgumentParser
 
 API_URL = "https://api-ssl.bitly.com/v4/"
 
@@ -9,11 +10,16 @@ API_URL = "https://api-ssl.bitly.com/v4/"
 def main():
     load_dotenv()
     bily_token = os.getenv("BITLY_TOKEN")
-
-    user_input = input('Введите ссылку, которую хотите сократить, \n'
-                       'или битлинк, '
-                       'для которого хотите узнать количество переходов: '
-                       ).strip()
+    
+    arg_parser = ArgumentParser(
+        description='Программа для сокращения ссылок и подсчёта количества переходов по битлинкам.'
+    )
+    arg_parser.add_argument(
+        'url',
+        help="Ссылка для сокращения или битлинк."
+    )
+    args = arg_parser.parse_args()
+    user_input = args.url
 
     if is_bitlink(bily_token, user_input):
         try:

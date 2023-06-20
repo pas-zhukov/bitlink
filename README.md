@@ -34,21 +34,22 @@ BITLY_TOKEN=<Ваш токен>
 ```
 2. Запускаем скрипт командой:
 ```
-python main.py
+python main.py <ссылка для сокращения или битлинк>
 ```
-3. Если всё было сделано правильно, программа предложит ввести ссылку:
-
-![img](screenshots/script_commence.png)
+например:
+```
+python main.py https://github.com/pas-zhukov/bitlink
+```
 
 
 Если ввести длинную ссылку, программа создаст битлинк:
 
-![img](screenshots/create_bitlink.png)
+![img](screenshots/bitlink_creation.png)
 
 
 Если ввести битлинк, программа покажет число переходов по нему:
 
-![img](screenshots/count_bitlink.png)
+![img](screenshots/bitlink_count.png)
 
 
 ## Цели проекта
